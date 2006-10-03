@@ -4,8 +4,7 @@ use strict;
 use Inline::Ruby qw(rb_eval rb_call_instance_method rb_call_class_method);
 use Carp;
 
-our $VERSION = '0.0.1';
-our $AUTOLOAD;
+our $VERSION = '0.0.2';
 
 sub new {
     my ($class, $uri) = @_;
@@ -15,18 +14,7 @@ sub new {
     require 'drb'
     DRb.start_service
 END
-    my $delegator = rb_call_class_method('DRbObject', 'new_with_uri', $uri);
-    bless {
-        delegator => $delegator,
-    }, $class;
-}
-
-sub AUTOLOAD {
-    my $self = shift;
-    (my $method = $AUTOLOAD) =~ s/.*:://;
-    return if $method eq 'DESTROY';
-
-    return rb_call_instance_method($self->{delegator}, $method, @_);
+    return rb_call_class_method('DRbObject', 'new_with_uri', $uri);
 }
 
 1;
@@ -46,7 +34,7 @@ Inline::Ruby::dRuby::Client - [quick use dRuby object from perl]
 
     use Inline::Ruby qw/rb_iter/; # use ruby's iter
     # call ruby's instance with block
-    rb_iter($ruby_obj->{delegator}, sub { 
+    rb_iter($ruby_obj, sub { 
         my $arg = shift; 
         return $arg * $arg; 
     })->each;

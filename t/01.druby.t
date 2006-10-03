@@ -77,7 +77,7 @@ is(20, $struct->number);
 rb_call_instance_method($struct, 'name=', 'tateno');
 is('tateno', $struct->name, 'set value with "=" operator');
 
-is(rb_iter($obj->{delegator}, sub { 
+is(rb_iter($obj, sub { 
     my $arg = shift; 
     return $arg * $arg; 
 })->block_call(3), 9, 'call block');
